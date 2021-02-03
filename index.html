@@ -3,6 +3,7 @@
   <head>
     <title>da-15.github.io</title>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <style>
       html {
         height: 100%;
@@ -11,13 +12,27 @@
         background-position: center center;
         background-size: cover;
       }
-      .clock {
-        margin-top: 80px;
-        text-align: center;
-        color: white;
-        font-size: 150px;
-        font-family: monospace, sans-serif;
-        font-weight: bold;
+      @media (max-width: 670px) {
+        /* スマホ */
+        .clock {
+          margin-top: 80px;
+          text-align: center;
+          color: white;
+          font-size: 300px;
+          font-family: monospace, sans-serif;
+          font-weight: bold;
+        }
+      }
+      @media (min-width: 671px) {
+        /* パソコン */
+        .clock {
+          margin-top: 80px;
+          text-align: center;
+          color: white;
+          font-size: 150px;
+          font-family: monospace, sans-serif;
+          font-weight: bold;
+        }
       }
     </style>
     <script>
@@ -32,7 +47,7 @@
     </script>
   </head>
   <body>
-      <div class="clock" id="clock-display"></div>
+    <div class="clock" id="clock-display"></div>
     <script>
       // 時計を更新
       setInterval("showClock2()", 1000);
