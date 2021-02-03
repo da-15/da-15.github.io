@@ -17,10 +17,10 @@
         .clock {
           margin-top: 50px;
           font-size: 100px;
+          font-weight: normal;
           text-align: center;
           color: white;
           font-family: monospace, sans-serif;
-          font-weight: normal;
         }
       }
       @media (min-width: 671px) {
@@ -28,21 +28,20 @@
         .clock {
           margin-top: 80px;
           font-size: 150px;
+          font-weight: bold;
           text-align: center;
           color: white;
           font-family: monospace, sans-serif;
-          font-weight: bold;
         }
       }
     </style>
     <script>
       function showClock() {
-        var now = new Date();
-        var nowHour = ("0" + now.getHours()).slice(-2);
-        var nowMin = ("0" + now.getMinutes()).slice(-2);
+        let now = new Date();
+        let hour = ("0" + now.getHours()).slice(-2);
+        let min = ("0" + now.getMinutes()).slice(-2);
         // 時計を表示
-        document.getElementById("clock-display").innerHTML =
-          nowHour + ":" + nowMin;
+        document.getElementById("clock-display").innerHTML = hour + ":" + min;
       }
     </script>
   </head>
