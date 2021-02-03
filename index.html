@@ -1,11 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<title>da-15</title>
+<title>da-15.github.io</title>
 </head>
 <body>
     Hello, world<br>
     <br>
-    <a href="https://da-15.github.io/">da-15.github.io</a>
+    <!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        background-position: center center;
+        background-size: cover;
+      }
+      .clock {
+        margin-top: 80px;
+        text-align: center;
+        color: white;
+        font-size: 150px;
+        font-family: monospace, sans-serif;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+      function showClock2() {
+        var now = new Date();
+        var nowHour = ("0" + now.getHours()).slice(-2);
+        var nowMin = ("0" + now.getMinutes()).slice(-2);
+        // 時計を表示
+        document.getElementById("clock-display").innerHTML =
+          nowHour + ":" + nowMin;
+      }
+    </script>
+  </head>
+  <body>
+      <div class="clock" id="clock-display"></div>
+    <script>
+      // 時計を更新
+      setInterval("showClock2()", 1000);
+      // 背景を表示
+      document.body.background =
+        "./img/" + ("0" + Math.floor(Math.random() * 5)).slice(-2) + ".jpg";
+    </script>
+  </body>
+</html>
+
 </body>
 </html>
