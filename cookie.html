@@ -4,11 +4,11 @@
       path: "/"
     };
 
-    /*
-    if (options.expires.toUTCString) {
+    
+    if (options.expires.toUTCString()) {
       options.expires = options.expires.toUTCString();
     }
-    */
+    
 
     let updatedCookie =
       encodeURIComponent(name) + "=" + encodeURIComponent(value);
@@ -38,10 +38,7 @@
 
 
 
-  alert(getCookie("user"));
-
-
+  alert(getCookie("user1"));
   setCookie('user1', 'John', {secure: true, 'max-age': 3600});
 
 </script>
-ge
