@@ -1,9 +1,7 @@
 <script>
   function setCookie(name, value, options = {}) {
     options = {
-      path: "/",
-      // 必要でれば他のデフォルトを追加する
-      ...options,
+      path: "/"
     };
 
     if (options.expires.toUTCString) {
@@ -44,3 +42,4 @@
   setCookie('user1', 'John', {secure: true, 'max-age': 3600});
 
 </script>
+ge
