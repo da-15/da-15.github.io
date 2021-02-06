@@ -1,4 +1,4 @@
-# da-15.github.io 0000
+# da-15.github.io
 github.ioの設置
 
 https://da-15.github.io/
