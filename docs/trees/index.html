@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>庭の剪定カレンダー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0E8; --paper:#F9FAF6; --ink:#1E2A21; --sub:#5B6A5E; --rule:#D3DACD;
+  --main:#2E6A3E; --light:#9FC596; --avoid:#B9876A; --now:#E0A526; --nowbg:rgba(224,165,38,.14);
+  --group:#E2E8DC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A16; --paper:#1B231D; --ink:#E4EBE2; --sub:#9AAA9C; --rule:#2E3A31;
+    --main:#5FAE72; --light:#3D6B45; --avoid:#A0735A; --now:#E8B84A; --nowbg:rgba(232,184,74,.12);
+    --group:#222C25;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A16; --paper:#1B231D; --ink:#E4EBE2; --sub:#9AAA9C; --rule:#2E3A31;
+  --main:#5FAE72; --light:#3D6B45; --avoid:#A0735A; --now:#E8B84A; --nowbg:rgba(232,184,74,.12);
+  --group:#222C25;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.7}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 20px 56px}
+h1{font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;font-weight:700;
+  font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.25;margin:0 0 6px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 28px;font-size:.95rem}
+
+/* 今月の手入れ */
+.now{background:var(--paper);border-left:6px solid var(--now);border-radius:4px 14px 14px 4px;
+  padding:18px 22px;margin-bottom:28px}
+.now h2{font-family:"Zen Maru Gothic",sans-serif;font-size:1.25rem;margin:0 0 10px}
+.now ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.now li{padding:4px 12px;border-radius:999px;font-size:.9rem;font-weight:500}
+.now li.main{background:var(--main);color:#fff}
+.now li.light{background:var(--light);color:var(--ink)}
+.now li.avoid{border:1.5px dashed var(--avoid);color:var(--avoid)}
+.now .empty{color:var(--sub)}
+
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:.85rem;color:var(--sub);margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:26px;height:10px;border-radius:3px;display:inline-block}
+.sw.main{background:var(--main)} .sw.light{background:var(--light)}
+.sw.avoid{background:repeating-linear-gradient(135deg,var(--avoid) 0 3px,transparent 3px 6px);outline:1px solid var(--avoid)}
+.sw.nowmark{background:var(--now);width:4px;height:14px}
+
+/* チャート */
+.scroller{overflow-x:auto;background:var(--paper);border-radius:14px;border:1px solid var(--rule)}
+.chart{min-width:760px}
+.row{display:grid;grid-template-columns:52px 176px 1fr;align-items:stretch;border-bottom:1px solid var(--rule)}
+.row:last-child{border-bottom:0}
+.cell{padding:9px 10px;display:flex;align-items:center}
+.wbs{font-variant-numeric:tabular-nums;color:var(--sub);font-size:.82rem;
+  position:sticky;left:0;background:inherit;z-index:2}
+.name{position:sticky;left:52px;background:inherit;z-index:2;border-right:1px solid var(--rule)}
+.row,.row .wbs,.row .name{background:var(--paper)}
+.head,.head .wbs,.head .name{background:var(--paper)}
+.head{font-size:.8rem;color:var(--sub);font-weight:700}
+.group,.group .wbs,.group .name{background:var(--group)}
+.group .name{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:.95rem}
+.track{display:grid;grid-template-columns:repeat(12,1fr);position:relative;min-height:44px}
+.mcol{grid-row:1;border-left:1px solid var(--rule)}
+.mcol:first-child{border-left:0}
+.mcol.cur{background:var(--nowbg);box-shadow:inset 3px 0 0 var(--now)}
+.mlabel{grid-row:1;text-align:center;align-self:center;font-size:.8rem;padding:8px 0}
+.mlabel.cur{color:var(--ink);font-weight:700}
+.bar{grid-row:1;align-self:center;height:16px;margin:0 3px;border-radius:5px;z-index:1}
+.bar.main{background:var(--main)}
+.bar.light{background:var(--light)}
+.bar.avoid{background:repeating-linear-gradient(135deg,var(--avoid) 0 3px,transparent 3px 7px);
+  border:1px solid var(--avoid);height:12px;opacity:.85}
+
+button.plant{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:0;width:100%}
+button.plant:focus-visible{outline:2px solid var(--now);outline-offset:3px;border-radius:4px}
+.pname{font-weight:700;font-size:.98rem}
+.ptype{font-size:.75rem;color:var(--sub)}
+.pname::after{content:"＋";font-size:.75rem;color:var(--sub);margin-left:6px}
+button.plant[aria-expanded="true"] .pname::after{content:"－"}
+.note{display:none;grid-column:1/-1;padding:4px 16px 14px 62px;font-size:.88rem;color:var(--sub);background:var(--paper)}
+.note.open{display:block}
+.note b{color:var(--ink);font-weight:500}
+
+.foot{font-size:.8rem;color:var(--sub);margin-top:18px;max-width:70ch}
+@media (max-width:640px){
+  .wrap{padding:28px 14px 40px}
+  .row{grid-template-columns:40px 128px 1fr}
+  .name{left:40px}
+  .note{padding-left:50px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .bar{transform-origin:left center;animation:grow .6s ease-out both}
+  @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>庭の剪定カレンダー</h1>
+  <p class="lead">12種類の木と草花の年間の手入れ目安です。名前をタップするとコツが開きます。</p>
+
+  <div class="legend">
+    <span><i class="sw main"></i>剪定の適期</span>
+    <span><i class="sw light"></i>軽い剪定・整理ならOK</span>
+    <span><i class="sw avoid"></i>なるべく避ける</span>
+  </div>
+
+  <div class="scroller"><div class="chart" id="chart"></div></div>
+
+  <p class="foot">関東〜関西の平地を目安にしています。寒冷地では春の作業を2〜4週間遅く、暖地では早めにずらしてください。サルビアは品種によって咲き方が違うので、花が一段落したタイミングを優先するのが確実です。</p>
+</div>
+
+<script>
+const DATA = [
+  {id:"1", group:"庭木", items:[
+    {name:"モミジ", type:"落葉高木",
+     seg:[[12,12,"main"],[1,2,"main"],[6,7,"light"],[3,5,"avoid"]],
+     note:"太い枝を切るのは葉が落ちた冬に。<b>春は切り口から樹液が出て弱りやすい</b>ので避けます。夏は込み合った細い枝を間引く程度に。"},
+    {name:"シマトネリコ", type:"常緑高木",
+     seg:[[4,6,"main"],[9,10,"light"],[12,12,"avoid"],[1,2,"avoid"]],
+     note:"成長がとても早いので年2回が目安。<b>高さを詰める強めの剪定は4〜6月</b>、秋は伸びすぎた枝の透かし程度にします。真冬は寒さで傷みやすいので避けます。"},
+    {name:"オリーブ", type:"常緑高木",
+     seg:[[2,3,"main"],[6,9,"light"],[4,5,"avoid"]],
+     note:"芽吹き前の2〜3月が本番。<b>4〜5月は開花期</b>なので切ると実がつきにくくなります。夏は徒長枝や内向きの枝を落とす程度に。"},
+    {name:"ナンテン", type:"常緑低木",
+     seg:[[2,3,"main"],[11,12,"light"],[6,7,"avoid"]],
+     note:"実を楽しんだあとの2〜3月に、<b>古い幹を根元から切って更新</b>します。11〜12月は実のついた枝を正月飾り用に切る程度ならOK。6〜7月は花・実がつく時期なので触らないのが無難です。"}
+  ]},
+  {id:"2", group:"ハーブ", items:[
+    {name:"ローズマリー", type:"常緑低木ハーブ",
+     seg:[[3,5,"main"],[9,10,"light"],[7,8,"avoid"]],
+     note:"<b>葉のない木質化した部分まで深く切ると芽が出にくい</b>ので、緑の葉を残して切ります。真夏の強い剪定は株が弱ります。"},
+    {name:"ラベンダー", type:"常緑小低木ハーブ",
+     seg:[[6,7,"main"],[3,3,"light"],[9,10,"light"],[12,12,"avoid"],[1,2,"avoid"]],
+     note:"花が終わったら<b>梅雨前に刈り込むと蒸れ防止</b>になります。春先は枯れ枝の整理だけ。冬の強剪定は避けます。"},
+    {name:"サルビア", type:"多年草",
+     seg:[[5,6,"light"],[7,8,"main"],[11,11,"light"]],
+     note:"夏に<b>株の1/2〜1/3まで切り戻すと秋にもう一度咲きます</b>。春は先端を摘むと枝数が増えます。"}
+  ]},
+  {id:"3", group:"草花・グラウンドカバー", items:[
+    {name:"オリヅルラン", type:"多年草",
+     seg:[[3,4,"main"],[5,8,"light"],[9,9,"main"],[11,12,"avoid"],[1,2,"avoid"]],
+     note:"葉が傷んだり込み合ったりしたら、<b>春先か秋口に地際で全部刈り込む</b>と新しい葉がそろって出てきます。春は霜の心配がなくなってから、秋は寒くなる前に葉が戻るよう9月中に。夏はランナー（子株）や枯れ葉の整理程度で、子株は切って植えれば増やせます。"},
+    {name:"ハツユキカズラ", type:"つる性常緑低木",
+     seg:[[3,4,"light"],[5,6,"main"],[9,10,"main"],[12,12,"avoid"],[1,1,"avoid"]],
+     note:"白やピンクの模様は<b>新しい葉に出る</b>ので、5〜6月と9〜10月に切り戻すと色がきれいに出ます。春先は傷んだつるの整理程度に。"},
+    {name:"ジュウニヒトエ", type:"多年草",
+     seg:[[5,6,"main"],[7,10,"light"]],
+     note:"花が終わったら花茎を根元から切ります。夏〜秋は<b>広がりすぎたランナーを整理</b>する程度で十分です。"},
+    {name:"ホウキグサ（コキア）", type:"一年草",
+     seg:[[6,7,"main"],[8,8,"light"]],
+     note:"一年草なので冬には枯れます。<b>丸い形に整えるなら初夏</b>に刈り込みを。秋は紅葉を楽しむ時期なので切らずに見守ります。"}
+  ]},
+  {id:"4", group:"多肉植物", items:[
+    {name:"セダム", type:"多肉植物",
+     seg:[[3,5,"main"],[9,10,"light"],[7,8,"avoid"]],
+     note:"伸びて乱れたら春か秋に切り戻し。<b>切った茎は挿し芽で増やせます</b>。真夏は蒸れやすいので触らないのが安全です。"}
+  ]}
+];
+
+const cur = 0;
+const chart = document.getElementById("chart");
+
+function monthCols(withLabels){
+  let h = "";
+  for(let m=1;m<=12;m++){
+    const c = m===cur ? " cur" : "";
+    h += `<div class="mcol${c}" style="grid-column:${m}"></div>`;
+    if(withLabels) h += `<div class="mlabel${c}" style="grid-column:${m}">${m}月</div>`;
+  }
+  return h;
+}
+
+let html = `<div class="row head"><div class="cell wbs">No.</div><div class="cell name">植物</div><div class="track">${monthCols(true)}</div></div>`;
+DATA.forEach(g=>{
+  html += `<div class="row group"><div class="cell wbs">${g.id}</div><div class="cell name">${g.group}</div><div class="track">${monthCols(false)}</div></div>`;
+  g.items.forEach((p,i)=>{
+    const no = `${g.id}.${i+1}`;
+    const bars = p.seg.map(([a,b,t],k)=>
+      `<div class="bar ${t}" style="grid-column:${a}/${b+1};animation-delay:${k*60}ms" title="${p.name}：${a}〜${b}月"></div>`).join("");
+    html += `<div class="row">
+      <div class="cell wbs">${no}</div>
+      <div class="cell name"><button class="plant" aria-expanded="false" aria-controls="n${no}">
+        <span class="pname">${p.name}</span><span class="ptype">${p.type}</span></button></div>
+      <div class="track">${monthCols(false)}${bars}</div>
+      <div class="note" id="n${no}">${p.note}</div>
+    </div>`;
+  });
+});
+chart.innerHTML = html;
+
+chart.addEventListener("click", e=>{
+  const b = e.target.closest("button.plant"); if(!b) return;
+  const open = b.getAttribute("aria-expanded")==="true";
+  b.setAttribute("aria-expanded", String(!open));
+  document.getElementById(b.getAttribute("aria-controls")).classList.toggle("open", !open);
+});
+
+</script>
+</body>
+</html>
